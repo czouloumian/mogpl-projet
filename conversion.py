@@ -2,6 +2,8 @@ import numpy as np
 from collections import deque
 import heapq
 import math
+import networkx as nx
+import matplotlib.pyplot as plt
 
 NORD = 0
 EST = 1
@@ -75,7 +77,7 @@ def get_neighbors(mat, forbidden_list, i, j, d):
     """
     liste = []
     liste.append((i, j, (d+1)%4))
-    liste.append((i, j, (d-1) % 4))
+    liste.append((i, j, (d-1)%4))
 
     n = len(mat)
     m = len(mat[0])
@@ -91,7 +93,7 @@ def get_neighbors(mat, forbidden_list, i, j, d):
             x += 1
 
     if d == SUD :
-        while i+x < n and x<=3:
+        while i+x <= n and x<=3:
             if (i+x,j) not in forbidden_list:
                 liste.append((i+x,j,d))
             else :
@@ -99,7 +101,7 @@ def get_neighbors(mat, forbidden_list, i, j, d):
             x += 1
 
     if d == EST :
-        while j+x < m and x<=3:
+        while j+x <= m and x<=3:
             if (i,j+x) not in forbidden_list:
                 liste.append((i,j+x,d))
             else :
@@ -128,6 +130,7 @@ def create_graph(mat):
     dictionary = dict()
 
     forbidden_list = forbidden_edges(mat)
+    print("forbidden list : ", forbidden_list)
 
     for i in range (n+1):
         for j in range (m+1):
@@ -218,15 +221,15 @@ def astar(graph, start, end):
     f = {start : g[start] + h}
     came_from = {start: None}
 
-    #openList = [(g, h, g+h, [start])]
-    openList = []
-    heapq.heappush(openList, (h,start))
+    #open_list = [(g, h, g+h, [start])]
+    open_list = []
+    heapq.heappush(open_list, (h,start))
 
     #closedDict = dict([(k, False) for k in graph.keys()])
 
-    while openList:
-        print("openList: ", openList)
-        _, curr = heapq.heappop(openList)
+    while open_list:
+        print("open_list: ", open_list)
+        _, curr = heapq.heappop(open_list)
         print("curr: ", curr)
         print("g[curr]",g[curr])
         print("f[curr]",f[curr])
@@ -237,9 +240,10 @@ def astar(graph, start, end):
             path = reconstruct_path(came_from, curr)
             #print("path dans a star ", path)
             return path
+
         for neighbor in graph[curr]:
             print("neighbor: ", neighbor)
-            new_g = g[curr] + 1
+            new_g = g[curr] + 1 #car toutes les arêtes du graphe ont un poids de 1
             print("new_g: ", new_g)
             if neighbor not in g or new_g < g[neighbor]:
                 came_from[neighbor] = curr
@@ -248,34 +252,67 @@ def astar(graph, start, end):
                 print("g[neighbor]: ", g[neighbor])
                 f[neighbor] = new_g + calculate_heuristic(neighbor, end)
                 print("f[neighbor]: ", f[neighbor])
-                heapq.heappush(openList, (f[neighbor], neighbor))
+                heapq.heappush(open_list, (f[neighbor], neighbor))
     return None
 
 
 if __name__ == "__main__" :
-    # mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
+    mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
 
     # forbidden_list = forbidden_edges(mat)
     # print("forbidden list : ", forbidden_list)
     # print(len(forbidden_list))
 
-    # graphe = create_graph(mat)
+    graphe = create_graph(mat)
     # for u in graphe.keys():
     #     print("sommet : ", u)
     #     print("voisins : ", graphe[u])
     #     print("")
 
-    # dictionnaire = create_graph(mat)
-    # print("BFS : ", bfs(dictionnaire, (xd,yd,direction), (xa,ya)))
+    dictionnaire = create_graph(mat)
+    print("BFS : ", bfs(dictionnaire, (xd,yd,direction), (xa,ya)))
 
-    # a = astar(graphe, (xd,yd, direction), (xa,ya))
-    # print("A*: ", len(a),a)
-    
-    mat = [[0,0,0], [1,0,0], [0,1,0]]
-    graphe = create_graph(mat)
-    print(graphe)
-    a = astar(graphe, (0,0,2), (2,3))
+    a = astar(graphe, (xd,yd, direction), (xa,ya))
     print("A*: ", len(a),a)
+
+    #1. Créer un graphe NetworkX
+    G = nx.DiGraph()
+
+    #2. Ajouter les arêtes depuis le dictionnaire
+    for u, neighbors in graphe.items():
+      for v in neighbors:
+         G.add_edge(u, v)
+
+    #3. Desiner
+    pos = nx.spring_layout(G)  # calcule une position des noeuds
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
+    plt.show()
+    
+    #mat = [[0,0], [0,0]]
+    #graphe = create_graph(mat)
+
+    # 1. Créer un graphe NetworkX
+    #G = nx.DiGraph()
+
+    # 2. Ajouter les arêtes depuis le dictionnaire
+    #for u, neighbors in graphe.items():
+     #   for v in neighbors:
+      #      G.add_edge(u, v)
+
+    # 3. Dessiner
+    #pos = nx.spring_layout(G)  # calcule une position des noeuds
+    #nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
+    #plt.show()
+
+    #mat = [[0, 0, 0], [1, 0, 0], [0, 1, 0]]
+    #graphe = create_graph(mat)
+    #print(graphe)
+    #a = astar(graphe, (0, 0, 2), (3, 3))
+    #print("A*: ", len(a), a)
+
+    #print(graphe)
+    #a = astar(graphe, (0,0,2), (2,2))
+    #print("A*: ", len(a),a)
 
 
 # conversion du fichier d'entrée en graphe
