@@ -1,5 +1,7 @@
 import numpy as np
 from collections import deque
+import heapq
+import math
 
 NORD = 0
 EST = 1
@@ -141,7 +143,7 @@ def bfs(G, start, end):
     """
     :param G: graphe représenté sous forme de dictionnaire
     :param start: point de départ
-    :param end: point d'arrivé
+    :param end: point d'arrivée
     :return:
     """
     Q = deque([(0, [start])])
@@ -166,29 +168,114 @@ def bfs(G, start, end):
     return float("inf"), []
 
 
+def calculate_heuristic(curr, end):
+    """
+    Calculate the heuristic
+    
+    :param curr: current position
+    :param end: end position
+    """
+    #manhattan distance
+    i1, j1, _ = curr
+    i2, j2 = end
+    print("heuristique i1, j1,i2, j2", i1, j1, i2, j2)
+    print("h ", abs(i1-i2) + abs(j1-j2))
+    return abs(i1-i2) + abs(j1-j2)
+
+def reconstruct_path(came_from, end):
+    """
+    Reconstruct_path
+    
+    :param came_from: Description
+    :param end: Description
+    """
+    #print("debut reconstruct")
+    path = [end]
+    parent = came_from[end]
+    while parent != None:
+        path.append(parent)
+        parent = came_from[parent]
+    #print("reconstructed: ", path)
+    return path[::-1]
 
 
+def astar(graph, start, end):
+    """
+    Shortest path en utilisant l'algorithme A*
+    
+    :param graph: graphe représenté sous forme de dictionnaire
+    :param start: point de départ
+    :param end: point d'arrivée
+    :return:
+    """
+
+    #open: to be visited
+    #g = distance du depart
+    #h = heuristique
+    #f = g+h
+    g = {start: 0}
+    h = calculate_heuristic(start, end)
+    f = {start : g[start] + h}
+    came_from = {start: None}
+
+    #openList = [(g, h, g+h, [start])]
+    openList = []
+    heapq.heappush(openList, (h,start))
+
+    #closedDict = dict([(k, False) for k in graph.keys()])
+
+    while openList:
+        print("openList: ", openList)
+        _, curr = heapq.heappop(openList)
+        print("curr: ", curr)
+        print("g[curr]",g[curr])
+        print("f[curr]",f[curr])
+        i, j, _ = curr
+        
+        if (i,j) == end:
+            #print("came_from: ", came_from)
+            path = reconstruct_path(came_from, curr)
+            #print("path dans a star ", path)
+            return path
+        for neighbor in graph[curr]:
+            print("neighbor: ", neighbor)
+            new_g = g[curr] + 1
+            print("new_g: ", new_g)
+            if neighbor not in g or new_g < g[neighbor]:
+                came_from[neighbor] = curr
+                print("came_from[neighbor]: ", came_from[neighbor])
+                g[neighbor] = new_g
+                print("g[neighbor]: ", g[neighbor])
+                f[neighbor] = new_g + calculate_heuristic(neighbor, end)
+                print("f[neighbor]: ", f[neighbor])
+                heapq.heappush(openList, (f[neighbor], neighbor))
+    return None
 
 
 if __name__ == "__main__" :
-    mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
+    # mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
 
-    forbidden_list = forbidden_edges(mat)
-    print("forbidden list : ", forbidden_list)
-    print(len(forbidden_list))
+    # forbidden_list = forbidden_edges(mat)
+    # print("forbidden list : ", forbidden_list)
+    # print(len(forbidden_list))
 
+    # graphe = create_graph(mat)
+    # for u in graphe.keys():
+    #     print("sommet : ", u)
+    #     print("voisins : ", graphe[u])
+    #     print("")
+
+    # dictionnaire = create_graph(mat)
+    # print("BFS : ", bfs(dictionnaire, (xd,yd,direction), (xa,ya)))
+
+    # a = astar(graphe, (xd,yd, direction), (xa,ya))
+    # print("A*: ", len(a),a)
+    
+    mat = [[0,0,0], [1,0,0], [0,1,0]]
     graphe = create_graph(mat)
-    for u in graphe.keys():
-        print("sommet : ", u)
-        print("voisins : ", graphe[u])
-        print("")
-
-    dictionnaire = create_graph(mat)
-    print("BFS : ", bfs(dictionnaire, (xd,yd,direction), (xa,ya)))
-
-
-
-
+    print(graphe)
+    a = astar(graphe, (0,0,2), (2,3))
+    print("A*: ", len(a),a)
 
 
 # conversion du fichier d'entrée en graphe
