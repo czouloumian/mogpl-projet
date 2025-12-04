@@ -1,9 +1,10 @@
 import numpy as np
 from collections import deque
 import heapq
-import math
 import networkx as nx
 import matplotlib.pyplot as plt
+import random
+import time
 
 NORD = 0
 EST = 1
@@ -161,14 +162,14 @@ def bfs(G, start, end):
         i, j, d = node
 
         if (i,j) == end :
-            return distance, path
+            return path
 
         for neighbor in G[(i,j,d)]:
             if neighbor not in explored:
                 explored.add(neighbor)
                 Q.append((distance+1, path+[neighbor]))
 
-    return float("inf"), []
+    return []
 
 
 def calculate_heuristic(curr, end):
@@ -181,9 +182,19 @@ def calculate_heuristic(curr, end):
     #manhattan distance
     i1, j1, _ = curr
     i2, j2 = end
-    print("heuristique i1, j1,i2, j2", i1, j1, i2, j2)
-    print("h ", abs(i1-i2) + abs(j1-j2))
-    return abs(i1-i2) + abs(j1-j2)
+    x = abs(i1-i2)
+    if (x %3) == 0:
+        x = x // 3
+    else:
+        x = x//3 +1
+    
+    y = abs(j1-j2)
+    if (y %3) == 0:
+        y = y // 3
+    else:
+        y = y//3 +1
+
+    return x + y
 
 def reconstruct_path(came_from, end):
     """
@@ -228,11 +239,11 @@ def astar(graph, start, end):
     #closedDict = dict([(k, False) for k in graph.keys()])
 
     while open_list:
-        print("open_list: ", open_list)
+        # print("open_list: ", open_list)
         _, curr = heapq.heappop(open_list)
-        print("curr: ", curr)
-        print("g[curr]",g[curr])
-        print("f[curr]",f[curr])
+        # print("curr: ", curr)
+        # print("g[curr]",g[curr])
+        # print("f[curr]",f[curr])
         i, j, _ = curr
         
         if (i,j) == end:
@@ -242,54 +253,138 @@ def astar(graph, start, end):
             return path
 
         for neighbor in graph[curr]:
-            print("neighbor: ", neighbor)
+            # print("neighbor: ", neighbor)
             new_g = g[curr] + 1 #car toutes les arêtes du graphe ont un poids de 1
-            print("new_g: ", new_g)
+            # print("new_g: ", new_g)
             if neighbor not in g or new_g < g[neighbor]:
                 came_from[neighbor] = curr
-                print("came_from[neighbor]: ", came_from[neighbor])
+                # print("came_from[neighbor]: ", came_from[neighbor])
                 g[neighbor] = new_g
-                print("g[neighbor]: ", g[neighbor])
+                # print("g[neighbor]: ", g[neighbor])
                 f[neighbor] = new_g + calculate_heuristic(neighbor, end)
-                print("f[neighbor]: ", f[neighbor])
+                # print("f[neighbor]: ", f[neighbor])
                 heapq.heappush(open_list, (f[neighbor], neighbor))
     return None
 
 
-if __name__ == "__main__" :
-    mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
+def write_file(filename, result):
+    """
+    Docstring for write_file
+    
+    :param filename: Description
+    :param result: Description
+    """
 
-    # forbidden_list = forbidden_edges(mat)
-    # print("forbidden list : ", forbidden_list)
-    # print(len(forbidden_list))
+    res = str(len(result)-1) #taille du resultat, -1 car on ne compte pas la position de depart
+    for i in range(len(result)-1):
+        print("result[i]", result[i])
+        x_curr, y_curr, d_curr = result[i]
+        x_next, y_next, d_next = result[i+1]
+        
+        if x_curr != x_next:
+            res += " a" + str(abs(x_curr - x_next))
+        elif y_curr != y_next:
+            res += " a" + str(abs(y_curr - y_next))
+        else:
+            delta = (d_curr - d_next) % 4
+            if delta == 1:
+                res += " G"
+            else:
+                res += " D"
 
-    graphe = create_graph(mat)
-    # for u in graphe.keys():
-    #     print("sommet : ", u)
-    #     print("voisins : ", graphe[u])
-    #     print("")
+    with open(filename, "w") as f:
+        f.write(res)
 
-    dictionnaire = create_graph(mat)
-    print("BFS : ", bfs(dictionnaire, (xd,yd,direction), (xa,ya)))
 
-    a = astar(graphe, (xd,yd, direction), (xa,ya))
-    print("A*: ", len(a),a)
+def generate_instance_grid(n):
+    mat = np.zeros((n,n), dtype=int)
+    obstacles = 0
+    while obstacles < n:
+        x = random.randint(0,n-1)
+        y = random.randint(0,n-1)
+        if mat[x][y] == 0 and not(x== 0 and y==0):
+            mat[x][y] = 1
+            obstacles += 1
+    return create_graph(mat)
 
-    #1. Créer un graphe NetworkX
-    G = nx.DiGraph()
+def generate_instance_obs(o):
+    mat = np.zeros((20,20), dtype=int)
+    obstacles = 0
+    while obstacles < o:
+        x = random.randint(0,19)
+        y = random.randint(0,19)
+        if mat[x][y] == 0:
+            mat[x][y] = 1
+            obstacles += 1
+    return create_graph(mat)
 
-    #2. Ajouter les arêtes depuis le dictionnaire
-    for u, neighbors in graphe.items():
-      for v in neighbors:
-         G.add_edge(u, v)
+def test_grid():
+    list_t = []
+    for i in range(1,6):
+        t = 0
+        for j in range(50):
+            graphe = generate_instance_grid(i*10)
+            start = time.time()
+            _ = astar(graphe, (0,0,0), (i*10, i*10))
+            end = time.time()
+            t += end - start
+        list_t.append(t/10)
+    return list_t
 
-    #3. Desiner
-    pos = nx.spring_layout(G)  # calcule une position des noeuds
-    nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
+def plot_test_grid(list):
+    plt.plot([10,20,30,40,50], list, color="blue")
+    # plt.plot(liste_n, 0.00001*liste_n, color="red", label="O(n)")
+    # plt.plot(liste_n, 0.000001*(liste_n**2), color="orange", label="O(n²)")
+    # plt.plot(liste_n, 0.00000001*(2**liste_n), color="green", label="O(2ⁿ)")
+    plt.xlabel("Taille de la grille")
+    plt.ylabel("Temps d'execution")
+    plt.title("Temps d'exécution en fonction de la taille de la grille")
+    plt.legend()
     plt.show()
     
-    #mat = [[0,0], [0,0]]
-    #graphe = create_graph(mat)
+
+
+
+if __name__ == "__main__" :
+    # mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
+
+    # # forbidden_list = forbidden_edges(mat)
+    # # print("forbidden list : ", forbidden_list)
+    # # print(len(forbidden_list))
+
+    # graphe = create_graph(mat)
+    # # for u in graphe.keys():
+    # #     print("sommet : ", u)
+    # #     print("voisins : ", graphe[u])
+    # #     print("")
+
+    # dictionnaire = create_graph(mat)
+    # bfs_sol = bfs(dictionnaire, (xd,yd,direction), (xa,ya))
+    # print("BFS : ", bfs_sol)
+
+    # a = astar(graphe, (xd,yd, direction), (xa,ya))
+    # print("A*: ", len(a),a)
+
+    # write_file("test_bfs.txt", bfs_sol) 
+    # write_file("test_astar.txt", a)
+
+
+    plot_test_grid(test_grid())
+    # #1. Créer un graphe NetworkX
+    # G = nx.DiGraph()
+
+    # #2. Ajouter les arêtes depuis le dictionnaire
+    # for u, neighbors in graphe.items():
+    #   for v in neighbors:
+    #      G.add_edge(u, v)
+
+    # #3. Desiner
+    # pos = nx.spring_layout(G)  # calcule une position des noeuds
+    # nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
+    # plt.show()
+    
+    # #mat = [[0,0], [0,0]]
+    # #graphe = create_graph(mat)
 
     # 1. Créer un graphe NetworkX
     #G = nx.DiGraph()
@@ -314,22 +409,3 @@ if __name__ == "__main__" :
     #a = astar(graphe, (0,0,2), (2,2))
     #print("A*: ", len(a),a)
 
-
-# conversion du fichier d'entrée en graphe
-
-#infos à prendre du fichier txt
-#       - dimensions
-#       - coordonnees des obstacles (obstacle = 4 sommets de la grille + 4 aretes où in ne peut pas aller)
-#       - directions nord-sud-est-ouest du départ
-#       - coordonnees du depart
-
-#graphe créé:
-#       - sommets: 4 par sommet car 4 directions possible. ex: (0,0) nord
-#       - peut tourner à droite ou à gauche, de 1. donc nord <-> est, nord <-> ouest, sud <-> est, sud <-> ouest
-#       - peut avancer de 1, 2 ou 3 cases
-#       - aretes pour tourner: poids de 1
-#       - aretes avancer de 1, 2 ou 3: poids de 1
-
-#algo: DFS modifié
-#       - racine: point de départ avec direction
-#       - subtilité: pour éviter les boucles, il faut ne pas pouvoir retourner un noeud déjà visité dans une même branche
