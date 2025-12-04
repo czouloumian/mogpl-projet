@@ -131,7 +131,7 @@ def create_graph(mat):
     dictionary = dict()
 
     forbidden_list = forbidden_edges(mat)
-    print("forbidden list : ", forbidden_list)
+    # print("forbidden list : ", forbidden_list)
 
     for i in range (n+1):
         for j in range (m+1):
@@ -277,7 +277,7 @@ def write_file(filename, result):
 
     res = str(len(result)-1) #taille du resultat, -1 car on ne compte pas la position de depart
     for i in range(len(result)-1):
-        print("result[i]", result[i])
+        # print("result[i]", result[i])
         x_curr, y_curr, d_curr = result[i]
         x_next, y_next, d_next = result[i+1]
         
@@ -297,6 +297,11 @@ def write_file(filename, result):
 
 
 def generate_instance_grid(n):
+    """
+    Generate instances based on the size of the grid
+    
+    :param n: length of the grid (size of the grid: n x n)
+    """
     mat = np.zeros((n,n), dtype=int)
     obstacles = 0
     while obstacles < n:
@@ -308,17 +313,25 @@ def generate_instance_grid(n):
     return create_graph(mat)
 
 def generate_instance_obs(o):
+    """
+    Generate instances based on the number of obstacles
+    
+    :param o: number of obstacles
+    """
     mat = np.zeros((20,20), dtype=int)
     obstacles = 0
     while obstacles < o:
         x = random.randint(0,19)
         y = random.randint(0,19)
-        if mat[x][y] == 0:
+        if mat[x][y] == 0 and not(x== 0 and y==0):
             mat[x][y] = 1
             obstacles += 1
     return create_graph(mat)
 
 def test_grid():
+    """
+    Test pour la génération d'instances de graphe selon la taille de la matrice
+    """
     list_t = []
     for i in range(1,6):
         t = 0
@@ -328,10 +341,15 @@ def test_grid():
             _ = astar(graphe, (0,0,0), (i*10, i*10))
             end = time.time()
             t += end - start
-        list_t.append(t/10)
+        list_t.append(t/50)
     return list_t
 
 def plot_test_grid(list):
+    """
+    Plot pour le test de la génération d'instances selon la taille
+    
+    :param list: list of the times taken for each randomly generated graph
+    """
     plt.plot([10,20,30,40,50], list, color="blue")
     # plt.plot(liste_n, 0.00001*liste_n, color="red", label="O(n)")
     # plt.plot(liste_n, 0.000001*(liste_n**2), color="orange", label="O(n²)")
@@ -342,6 +360,47 @@ def plot_test_grid(list):
     plt.legend()
     plt.show()
     
+
+def test_obs():
+    """
+    Test pour la génération d'instances de graphe selon le nombre d'obstacles
+    """
+    list_t = []
+    for i in range(1,6):
+        t = 0
+        for j in range(50):
+            found = False
+            redo = 0
+            max_redo = 100
+            while found == False and redo < max_redo: 
+                graphe = generate_instance_obs(i*10)
+                start = time.time()
+                a = astar(graphe, (0,0,0), (i*10, i*10))
+                end = time.time()
+                redo += 1
+                if a != None:
+                    found = True
+            if redo == max_redo:
+                print("no sol trouvée pour i = ", i, " et j = ", j)
+            t += end - start
+        list_t.append(t/50)
+    return list_t
+
+def plot_test_obs(list):
+    """
+    Plot pour le test de la génération d'instances d'obstacles
+    
+    :param list: list of the times taken for each randomly generated graph
+    """
+    plt.plot([10,20,30,40,50], list, color="blue")
+    # plt.plot(liste_n, 0.00001*liste_n, color="red", label="O(n)")
+    # plt.plot(liste_n, 0.000001*(liste_n**2), color="orange", label="O(n²)")
+    # plt.plot(liste_n, 0.00000001*(2**liste_n), color="green", label="O(2ⁿ)")
+    plt.xlabel("Taille de la grille")
+    plt.ylabel("Temps d'execution")
+    plt.title("Temps d'exécution en fonction du nombre d'obstacles")
+    plt.legend()
+    plt.show()
 
 
 
@@ -370,6 +429,7 @@ if __name__ == "__main__" :
 
 
     plot_test_grid(test_grid())
+    plot_test_obs(test_obs())
     # #1. Créer un graphe NetworkX
     # G = nx.DiGraph()
 
