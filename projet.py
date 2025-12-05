@@ -334,14 +334,15 @@ def test_grid():
     """
     list_t = []
     for i in range(1,6):
+        print("i: ", i)
         t = 0
-        for j in range(50):
+        for j in range(100):
             graphe = generate_instance_grid(i*10)
             start = time.time()
             _ = astar(graphe, (0,0,0), (i*10, i*10))
             end = time.time()
             t += end - start
-        list_t.append(t/50)
+        list_t.append(t/100)
     return list_t
 
 def plot_test_grid(list):
@@ -366,24 +367,30 @@ def test_obs():
     Test pour la génération d'instances de graphe selon le nombre d'obstacles
     """
     list_t = []
+    redo_list = [] # redos for each number of obstacles
     for i in range(1,6):
         t = 0
-        for j in range(50):
+        print("i: ", i)
+        redo_per_i= 0
+        for j in range(100):
             found = False
             redo = 0
             max_redo = 100
             while found == False and redo < max_redo: 
                 graphe = generate_instance_obs(i*10)
                 start = time.time()
-                a = astar(graphe, (0,0,0), (i*10, i*10))
+                a = astar(graphe, (0,0,0), (20, 20))
                 end = time.time()
                 redo += 1
                 if a != None:
                     found = True
             if redo == max_redo:
                 print("no sol trouvée pour i = ", i, " et j = ", j)
+            redo_per_i += redo
             t += end - start
-        list_t.append(t/50)
+        list_t.append(t/100)
+        redo_list.append(redo_per_i)
+    print(redo_list)
     return list_t
 
 def plot_test_obs(list):
@@ -396,10 +403,9 @@ def plot_test_obs(list):
     # plt.plot(liste_n, 0.00001*liste_n, color="red", label="O(n)")
     # plt.plot(liste_n, 0.000001*(liste_n**2), color="orange", label="O(n²)")
     # plt.plot(liste_n, 0.00000001*(2**liste_n), color="green", label="O(2ⁿ)")
-    plt.xlabel("Taille de la grille")
+    plt.xlabel("Nombre d'obstacles")
     plt.ylabel("Temps d'execution")
-    plt.title("Temps d'exécution en fonction du nombre d'obstacles")
-    plt.legend()
+    plt.title("Temps d'exécution en fonction du nombre d'obstacles dans une grille 20x20")
     plt.show()
 
 
