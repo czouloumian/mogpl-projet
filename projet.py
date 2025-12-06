@@ -313,7 +313,7 @@ def generate_instance_grid(n, m, o):
         if mat[x][y] == 0 and not(x== 0 and y==0):
             mat[x][y] = 1
             obstacles += 1
-    return create_graph(mat)
+    return mat, create_graph(mat)
 
 def generate_instance_obs(o):
     """
@@ -342,7 +342,7 @@ def test_grid():
         t_a = 0
         t_bfs = 0
         for j in range(1000):
-            graphe = generate_instance_grid(i*10, i*10, i*10)
+            _, graphe = generate_instance_grid(i*10, i*10, i*10)
             start = time.time()
             _ = astar(graphe, (0,0,0), (i*10, i*10))
             end = time.time()
