@@ -456,21 +456,21 @@ def plot_test_obs_no_solution(list_no_sol):
 
 
 if __name__ == "__main__" :
-    # mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
+    mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
 
-    # # forbidden_list = forbidden_edges(mat)
-    # # print("forbidden list : ", forbidden_list)
+    forbidden_list = forbidden_edges(mat)
+    #print("forbidden list : ", forbidden_list)
     # # print(len(forbidden_list))
 
-    # graphe = create_graph(mat)
+    graphe = create_graph(mat)
     # # for u in graphe.keys():
     # #     print("sommet : ", u)
     # #     print("voisins : ", graphe[u])
     # #     print("")
 
-    # dictionnaire = create_graph(mat)
-    # bfs_sol = bfs(dictionnaire, (xd,yd,direction), (xa,ya))
-    # print("BFS : ", bfs_sol)
+    dictionnaire = create_graph(mat)
+    bfs_sol = bfs(dictionnaire, (xd,yd,direction), (xa,ya))
+    print("BFS : ", bfs_sol)
 
     # a = astar(graphe, (xd,yd, direction), (xa,ya))
     # print("A*: ", len(a),a)
@@ -478,8 +478,8 @@ if __name__ == "__main__" :
     # write_file("test_bfs.txt", bfs_sol) 
     # write_file("test_astar.txt", a)
 
-    la, lbfs = test_grid()
-    plot_test_grid(la, lbfs)
+    #la, lbfs = test_grid()
+    #plot_test_grid(la, lbfs)
     #list_sol_a, list_sol_bfs = test_obs()
     #plot_test_obs_no_solution(list_no_sol)
     #plot_test_obs_solution(list_sol_a, list_sol_bfs)

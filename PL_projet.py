@@ -11,7 +11,6 @@ def solution_linear_program(M,N,P):
     :return: la grille avec les obstacles placés
     """
 
-    np.random.seed(42)
     w = np.random.randint(0, 1001, size=(M, N))
 
     model = gp.Model("PL_projet")
@@ -28,11 +27,11 @@ def solution_linear_program(M,N,P):
     for j in range(N): #qte obstacles par colonne <= 2P/N
         model.addConstr(gp.quicksum(x[i,j] for i in range(M)) <= 2*P/N)
 
-    for i in range(M):
+    for i in range(M): #pas de séquence 101
         for j in range(1, N-1):
             model.addConstr(x[i,j-1] + x[i,j+1] <= 1 + x[i,j])
 
-    for j in range(N):
+    for j in range(N): #pas de séquence 101
         for i in range(1, M-1):
             model.addConstr(x[i-1,j] + x[i+1,j] <= 1 + x[i,j])
 

@@ -1,63 +1,145 @@
 import tkinter as tk
 from tkinter import messagebox
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import projet
 import PL_projet
 
+grid = None  # variable globale
 
-def plot_grid(m, n, p):
-    grid= PL_projet.solution_linear_program(m,n,p)
+def show_grid_window(m, n, p):
+    global grid
+    grid = PL_projet.solution_linear_program(m, n, p)
 
-    plt.imshow(grid, cmap="gray_r")
-    plt.title(f"Grille {m}x{n} avec {p} obstacles")
-    plt.show()
+    # Nouvelle fenêtre
+    grid_window = tk.Toplevel(root)
+    grid_window.title("Grille et saisie du chemin")
+
+    # Frames pour mettre la grille à gauche et les entrées à droite
+    frame_grid = tk.Frame(grid_window)
+    frame_grid.pack(side=tk.LEFT, padx=10, pady=10)
+
+    frame_inputs = tk.Frame(grid_window)
+    frame_inputs.pack(side=tk.RIGHT, padx=10, pady=10)
+
+    # Figure Matplotlib
+    fig, ax = plt.subplots()
+    ax.imshow(grid, cmap="gray_r")
+
+    # Ajouter les railles
+    ax.set_xticks([x - 0.5 for x in range(1, grid.shape[1])])
+    ax.set_yticks([y - 0.5 for y in range(1, grid.shape[0])])
+    ax.grid(color='black', linewidth=1)
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+
+    ax.set_title(f"Grille {m}x{n} avec {p} obstacles")
+    canvas = FigureCanvasTkAgg(fig, master=frame_grid)
+    canvas.draw()
+    canvas.get_tk_widget().pack()
+
+    # Saisie départ/direction/arrivée
+    tk.Label(frame_inputs, text="Point de départ i (ligne)").pack()
+    entry_i = tk.Entry(frame_inputs)
+    entry_i.pack()
+
+    tk.Label(frame_inputs, text="Point de départ j (colonne)").pack()
+    entry_j = tk.Entry(frame_inputs)
+    entry_j.pack()
+
+    tk.Label(frame_inputs, text="Direction initiale d (0=N,1=E,2=S,3=O)").pack()
+    entry_d = tk.Entry(frame_inputs)
+    entry_d.pack()
+
+    tk.Label(frame_inputs, text="Point d'arrivée i").pack()
+    entry_dest_i = tk.Entry(frame_inputs)
+    entry_dest_i.pack()
+
+    tk.Label(frame_inputs, text="Point d'arrivée j").pack()
+    entry_dest_j = tk.Entry(frame_inputs)
+    entry_dest_j.pack()
+
+    def generate_path_in_window():
+        try:
+            i = int(entry_i.get())
+            j = int(entry_j.get())
+            d = int(entry_d.get())
+            dest_i = int(entry_dest_i.get())
+            dest_j = int(entry_dest_j.get())
+
+            if not (0 <= d <= 3):
+                raise ValueError("Direction doit être entre 0 et 3")
+            if not (0 <= i <= len(grid)) or not (0 <= j <= len(grid[0])):
+                raise ValueError("Point de départ hors de la grille")
+            if not (0 <= dest_i <= len(grid)) or not (0 <= dest_j <= len(grid[0])):
+                raise ValueError("Point d'arrivée hors de la grille")
+
+            path = projet.astar(projet.create_graph(grid), (i, j, d), (dest_i, dest_j))
+
+            # Tracer la grille
+            ax.clear()
+            ax.imshow(grid, cmap="gray_r")
+            ax.set_xticks([x - 0.5 for x in range(1, grid.shape[1])])
+            ax.set_yticks([y - 0.5 for y in range(1, grid.shape[0])])
+            ax.grid(color='black', linewidth=1)
+            ax.set_xticklabels([])
+            ax.set_yticklabels([])
+
+            # Tracer le chemin sur les railles (déplacement du milieu d'une case à l'autre)
+            if path:
+                for idx in range(len(path) - 1):
+                    i0, j0, _ = path[idx]
+                    i1, j1, _ = path[idx + 1]
+
+                    # Conversion : soustraire 1 pour passer de 1-index à 0-index
+                    i0 -= 1
+                    j0 -= 1
+                    i1 -= 1
+                    j1 -= 1
+
+                    # Ignorer rotations sur place
+                    if i0 == i1 and j0 == j1:
+                        continue
+
+                    # Horizontal ?
+                    if i0 == i1:
+                        y = i0 + 0.5  # milieu du bord horizontal
+                        step = 1 if j1 > j0 else -1
+                        for jj in range(j0, j1, step):
+                            ax.plot([jj + 0.5, jj + 0.5 + step], [y, y], color='red', linewidth=2, marker='o')
+
+                    # Vertical ?
+                    elif j0 == j1:
+                        x = j0 + 0.5  # milieu du bord vertical
+                        step = 1 if i1 > i0 else -1
+                        for ii in range(i0, i1, step):
+                            ax.plot([x, x], [ii + 0.5, ii + 0.5 + step], color='red', linewidth=2, marker='o')
 
 
-def generate(): #fonction generee par le bouton 
+            ax.set_title("Chemin trouvé")
+            canvas.draw()
+
+        except ValueError as e:
+            messagebox.showerror("Erreur", str(e))
+
+    tk.Button(frame_inputs, text="Générer le chemin", command=generate_path_in_window).pack(pady=10)
+
+def generate_grid_main():
     try:
         m = int(entry_m.get())
         n = int(entry_n.get())
         p = int(entry_p.get())
 
-        if n <= 0:
-            raise ValueError("La taille N doit être positive.")
+        if m <= 0 or n <= 0:
+            raise ValueError("M et N doivent être positifs")
         if not (0 <= p <= m * n):
-            raise ValueError("P doit être entre 0 et M*N.")
+            raise ValueError("P doit être entre 0 et M*N")
 
-        plot_grid(m, n, p)
-
+        show_grid_window(m, n, p)
     except ValueError as e:
         messagebox.showerror("Erreur", str(e))
 
-def generate_path():
-    global grid
-
-    if grid is None:
-        messagebox.showerror("Erreur", "Génère d'abord une grille !")
-        return
-
-    try:
-        i = int(entry_i.get())
-        j = int(entry_j.get())
-        d = int(entry_d.get())
-
-        if not (0 <= d <= 3):
-            raise ValueError("La direction doit être entre 0 et 3.")
-
-        path = projet.astar(projet.create_graph(grid), i, j, d)  
-
-        plt.imshow(grid, cmap="gray_r")
-        xs = [pos[1] for pos in path] 
-        ys = [pos[0] for pos in path]
-        plt.plot(xs, ys, marker="o")
-        plt.title("Chemin trouvé")
-        plt.show()
-
-    except ValueError as e:
-        messagebox.showerror("Erreur", str(e))
-
-
-
+# --- fenêtre principale ---
 root = tk.Tk()
 root.title("Génération de grille")
 
@@ -73,20 +155,6 @@ tk.Label(root, text="Nombre d'obstacles (P)").pack()
 entry_p = tk.Entry(root)
 entry_p.pack()
 
-tk.Button(root, text="Générer la grille", command=generate).pack(pady=10)
-
-tk.Label(root, text="Point de départ i (ligne)").pack()
-entry_i = tk.Entry(root)
-entry_i.pack()
-
-tk.Label(root, text="Point de départ j (colonne)").pack()
-entry_j = tk.Entry(root)
-entry_j.pack()
-
-tk.Label(root, text="Direction d (0=N, 1=E, 2=S, 3=O)").pack()
-entry_d = tk.Entry(root)
-entry_d.pack()
-
-tk.Button(root, text="Générer le chemin", command=generate_path).pack(pady=10)
+tk.Button(root, text="Générer la grille", command=generate_grid_main).pack(pady=10)
 
 root.mainloop()
