@@ -2,10 +2,11 @@ import tkinter as tk
 from tkinter import messagebox
 import matplotlib.pyplot as plt
 import projet
+import PL_projet
 
 
 def plot_grid(m, n, p):
-    grid, _ = projet.generate_instance_grid(m,n,p)
+    grid= PL_projet.solution_linear_program(m,n,p)
 
     plt.imshow(grid, cmap="gray_r")
     plt.title(f"Grille {m}x{n} avec {p} obstacles")
