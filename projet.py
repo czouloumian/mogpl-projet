@@ -454,13 +454,13 @@ def plot_test_obs_no_solution(list_no_sol):
     plt.show()
 
 def translate_direction(direction):
-    if direction == 0:
+    if direction == NORD:
         return "nord"
-    elif direction == 1:
+    elif direction == EST:
         return "est"
-    elif direction == 2:
+    elif direction == SUD:
         return "sud"
-    elif direction == 3:
+    elif direction == OUEST:
         return "ouest"
 
 def instance_out(filename, mat, start, end):
@@ -487,7 +487,7 @@ def instance_out(filename, mat, start, end):
 
 
 if __name__ == "__main__" :
-    #mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
+    mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
 
     #forbidden_list = forbidden_edges(mat)
     #print("forbidden list : ", forbidden_list)
@@ -529,21 +529,21 @@ if __name__ == "__main__" :
     # nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
     # plt.show()
     
-    mat = [[0,1], [0,0]]
-    graphe = create_graph(mat)
+    #mat = [[0,1], [0,0]]
+    #graphe = create_graph(mat)
 
     # 1. Créer un graphe NetworkX
-    G = nx.DiGraph()
+    #G = nx.DiGraph()
 
     # 2. Ajouter les arêtes depuis le dictionnaire
-    for u, neighbors in graphe.items():
-        for v in neighbors:
-            G.add_edge(u, v)
+    #for u, neighbors in graphe.items():
+     #   for v in neighbors:
+      #      G.add_edge(u, v)
 
     # 3. Dessiner
-    pos = nx.spring_layout(G)  # calcule une position des noeuds
-    nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
-    plt.show()
+    #pos = nx.spring_layout(G)  # calcule une position des noeuds
+    #nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
+    #plt.show()
 
     #mat = [[0, 0, 0], [1, 0, 0], [0, 1, 0]]
     #graphe = create_graph(mat)

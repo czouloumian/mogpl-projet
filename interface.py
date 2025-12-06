@@ -144,7 +144,7 @@ def generate_grid_main():
 
 # --- fenêtre principale ---
 root = tk.Tk()
-root.title("Génération de grille")
+root.title("Projet MOGPL")
 
 tk.Label(root, text="Nombre de lignes (M)").pack()
 entry_m = tk.Entry(root)
