@@ -18,14 +18,14 @@ def read_file(file_name : str):
     :return:
     """
     with open(file_name, "r") as file :
-        n, m = file.readline().split(" ")
+        m, n = file.readline().split(" ")
 
-        n = int(n)
         m = int(m)
+        n = int(n)
 
-        mat = np.zeros((n,m), dtype=int)
+        mat = np.zeros((m,n), dtype=int)
 
-        for i in range (n):
+        for i in range (m):
             mat[i] = file.readline().split(" ")
 
         #xd = x de départ et xa = x d'arrivée
@@ -80,8 +80,8 @@ def get_neighbors(mat, forbidden_list, i, j, d):
     liste.append((i, j, (d+1)%4))
     liste.append((i, j, (d-1)%4))
 
-    n = len(mat)
-    m = len(mat[0])
+    m = len(mat)
+    n = len(mat[0])
 
     x = 1
 
@@ -94,7 +94,7 @@ def get_neighbors(mat, forbidden_list, i, j, d):
             x += 1
 
     if d == SUD :
-        while i+x <= n and x<=3:
+        while i+x <= m and x<=3:
             if (i+x,j) not in forbidden_list:
                 liste.append((i+x,j,d))
             else :
@@ -102,7 +102,7 @@ def get_neighbors(mat, forbidden_list, i, j, d):
             x += 1
 
     if d == EST :
-        while j+x <= m and x<=3:
+        while j+x <= n and x<=3:
             if (i,j+x) not in forbidden_list:
                 liste.append((i,j+x,d))
             else :
@@ -125,16 +125,16 @@ def create_graph(mat):
     :param mat: matrice des obstacles
     :return: dictionnaire
     """
-    n = len(mat)
-    m = len(mat[0])
+    m = len(mat)
+    n = len(mat[0])
 
     dictionary = dict()
 
     forbidden_list = forbidden_edges(mat)
     # print("forbidden list : ", forbidden_list)
 
-    for i in range (n+1):
-        for j in range (m+1):
+    for i in range (m+1):
+        for j in range (n+1):
             if (i,j) not in forbidden_list :
                 dictionary[(i,j,NORD)] = get_neighbors(mat,forbidden_list,i,j,NORD)
                 dictionary[(i, j, SUD)] = get_neighbors(mat,forbidden_list, i, j, SUD)
@@ -296,7 +296,7 @@ def write_file(filename, result):
         f.write(res)
 
 
-def generate_instance_grid(n, m, o):
+def generate_instance_grid(m, n, o):
     """
     Generate instances based on the size of the grid
     
@@ -305,11 +305,11 @@ def generate_instance_grid(n, m, o):
     :param o: number of obstacles of the grid
 
     """
-    mat = np.zeros((n,m), dtype=int)
+    mat = np.zeros((m,n), dtype=int)
     obstacles = 0
     while obstacles < o:
-        x = random.randint(0,n-1)
-        y = random.randint(0,m-1)
+        x = random.randint(0,m-1)
+        y = random.randint(0,n-1)
         if mat[x][y] == 0 and not(x== 0 and y==0):
             mat[x][y] = 1
             obstacles += 1
@@ -452,6 +452,35 @@ def plot_test_obs_no_solution(list_no_sol):
     plt.ylabel("Temps d'execution")
     plt.title("Temps d'exécution en fonction du nombre d'obstacles dans une grille 20x20, aucun chemin possible")
     plt.show()
+
+# def instances_out(mat):
+#     for i in range(len(result)-1):
+#         # print("result[i]", result[i])
+#         x_curr, y_curr, d_curr = result[i]
+#         x_next, y_next, d_next = result[i+1]
+        
+#         if x_curr != x_next:
+#             res += " a" + str(abs(x_curr - x_next))
+#         elif y_curr != y_next:
+#             res += " a" + str(abs(y_curr - y_next))
+#         else:
+#             delta = (d_curr - d_next) % 4
+#             if delta == 1:
+#                 res += " G"
+#             else:
+#                 res += " D"
+
+#     with open(filename, "w") as f:
+#         f.write(res)
+
+#     #m et n
+#     #la matrice
+#     #dx dy, ax ay, direction(nord sud est ouest)
+#     #0 0
+#     return
+
+# def solutions_out():
+#     return
 
 
 
