@@ -206,7 +206,7 @@ def reconstruct_path(came_from, end):
     #print("debut reconstruct")
     path = [end]
     parent = came_from[end]
-    while parent != None:
+    while parent :
         path.append(parent)
         parent = came_from[parent]
     #print("reconstructed: ", path)
@@ -296,17 +296,20 @@ def write_file(filename, result):
         f.write(res)
 
 
-def generate_instance_grid(n):
+def generate_instance_grid(n, m, o):
     """
     Generate instances based on the size of the grid
     
-    :param n: length of the grid (size of the grid: n x n)
+    :param n: number of lines of the grid
+    :param m: number of columns of the grid
+    :param o: number of obstacles of the grid
+
     """
-    mat = np.zeros((n,n), dtype=int)
+    mat = np.zeros((n,m), dtype=int)
     obstacles = 0
-    while obstacles < n:
+    while obstacles < o:
         x = random.randint(0,n-1)
-        y = random.randint(0,n-1)
+        y = random.randint(0,m-1)
         if mat[x][y] == 0 and not(x== 0 and y==0):
             mat[x][y] = 1
             obstacles += 1
@@ -326,32 +329,42 @@ def generate_instance_obs(o):
         if mat[x][y] == 0 and not(x== 0 and y==0):
             mat[x][y] = 1
             obstacles += 1
-    return create_graph(mat)
+    return mat, create_graph(mat)
 
 def test_grid():
     """
     Test pour la génération d'instances de graphe selon la taille de la matrice
     """
-    list_t = []
+    list_astar = []
+    list_bfs = []
     for i in range(1,6):
         print("i: ", i)
-        t = 0
-        for j in range(100):
-            graphe = generate_instance_grid(i*10)
+        t_a = 0
+        t_bfs = 0
+        for j in range(1000):
+            graphe = generate_instance_grid(i*10, i*10, i*10)
             start = time.time()
             _ = astar(graphe, (0,0,0), (i*10, i*10))
             end = time.time()
-            t += end - start
-        list_t.append(t/100)
-    return list_t
+            t_a += end - start
 
-def plot_test_grid(list):
+            start = time.time()
+            _ = bfs(graphe, (0, 0, 0), (i * 10, i * 10))
+            end = time.time()
+            t_bfs += end - start
+
+        list_astar.append(t_a/1000)
+        list_bfs.append(t_bfs/1000)
+    return list_astar, list_bfs
+
+def plot_test_grid(list_astar, list_bfs):
     """
     Plot pour le test de la génération d'instances selon la taille
     
     :param list: list of the times taken for each randomly generated graph
     """
-    plt.plot([10,20,30,40,50], list, color="blue")
+    plt.plot([10, 20, 30, 40, 50], list_astar, color="blue", label="A*")
+    plt.plot([10, 20, 30, 40, 50], list_bfs, color="red", label="BFS")
     # plt.plot(liste_n, 0.00001*liste_n, color="red", label="O(n)")
     # plt.plot(liste_n, 0.000001*(liste_n**2), color="orange", label="O(n²)")
     # plt.plot(liste_n, 0.00000001*(2**liste_n), color="green", label="O(2ⁿ)")
@@ -366,46 +379,78 @@ def test_obs():
     """
     Test pour la génération d'instances de graphe selon le nombre d'obstacles
     """
-    list_t = []
-    redo_list = [] # redos for each number of obstacles
+    list_sol_astar = [] #grilles pour lesquelles une solution a été trouvée
+    list_sol_bfs = []
+    list_no_sol = [] #grilles pour lesquelles il n'y avait pas de solution
     for i in range(1,6):
-        t = 0
+        t_sol_a = 0
+        t_sol_bfs = 0
+        t_no_sol = 0
         print("i: ", i)
-        redo_per_i= 0
-        for j in range(100):
-            found = False
+        n_sol_found = 1000
+        n_sol_not_found = 0
+        for j in range(1000):
+            a = None
             redo = 0
             max_redo = 100
-            while found == False and redo < max_redo: 
-                graphe = generate_instance_obs(i*10)
+            while not a and redo < max_redo:
+                mat, graphe = generate_instance_obs(i*10)
                 start = time.time()
                 a = astar(graphe, (0,0,0), (20, 20))
                 end = time.time()
                 redo += 1
-                if a != None:
-                    found = True
+                if a :
+                    t_sol_a += end - start
+                    start = time.time()
+                    bfs_sol = bfs(graphe, (0, 0, 0), (20, 20))
+                    end = time.time()
+                    t_sol_bfs += end - start
+                #else :
+                #   t_no_sol += end - start
+                #  n_sol_not_found += 1
+
+
             if redo == max_redo:
                 print("no sol trouvée pour i = ", i, " et j = ", j)
-            redo_per_i += redo
-            t += end - start
-        list_t.append(t/100)
-        redo_list.append(redo_per_i)
-    print(redo_list)
-    return list_t
+                n_sol_found -= 1
+        print("nb sol ", n_sol_found)
+        print("nb pas sol ", n_sol_not_found)
+        list_sol_astar.append(t_sol_a/n_sol_found)
+        list_sol_bfs.append(t_sol_bfs / n_sol_found)
+        #list_no_sol.append(t_no_sol/n_sol_not_found)
+    return list_sol_astar, list_sol_bfs
 
-def plot_test_obs(list):
+def plot_test_obs_solution(list_sol_a, list_sol_bfs):
     """
     Plot pour le test de la génération d'instances d'obstacles
     
-    :param list: list of the times taken for each randomly generated graph
+    :param list_sol: list of the times taken for each randomly generated graph
     """
-    plt.plot([10,20,30,40,50], list, color="blue")
+    plt.plot([10,20,30,40,50], list_sol_a, color="blue", label = "A*")
+    plt.plot([10, 20, 30, 40, 50], list_sol_bfs, color="red", label = "BFS")
     # plt.plot(liste_n, 0.00001*liste_n, color="red", label="O(n)")
     # plt.plot(liste_n, 0.000001*(liste_n**2), color="orange", label="O(n²)")
     # plt.plot(liste_n, 0.00000001*(2**liste_n), color="green", label="O(2ⁿ)")
     plt.xlabel("Nombre d'obstacles")
     plt.ylabel("Temps d'execution")
     plt.title("Temps d'exécution en fonction du nombre d'obstacles dans une grille 20x20")
+    plt.legend()
+    plt.show()
+
+
+def plot_test_obs_no_solution(list_no_sol):
+    """
+    Plot pour le test de la génération d'instances d'obstacles
+
+    :param list_no_sol: list of the times taken for each randomly generated graph
+    """
+    plt.plot([10, 20, 30, 40, 50], list_no_sol, color="blue")
+    # plt.plot(liste_n, 0.00001*liste_n, color="red", label="O(n)")
+    # plt.plot(liste_n, 0.000001*(liste_n**2), color="orange", label="O(n²)")
+    # plt.plot(liste_n, 0.00000001*(2**liste_n), color="green", label="O(2ⁿ)")
+    plt.xlabel("Nombre d'obstacles")
+    plt.ylabel("Temps d'execution")
+    plt.title("Temps d'exécution en fonction du nombre d'obstacles dans une grille 20x20, aucun chemin possible")
     plt.show()
 
 
@@ -433,9 +478,11 @@ if __name__ == "__main__" :
     # write_file("test_bfs.txt", bfs_sol) 
     # write_file("test_astar.txt", a)
 
-
-    plot_test_grid(test_grid())
-    plot_test_obs(test_obs())
+    la, lbfs = test_grid()
+    plot_test_grid(la, lbfs)
+    #list_sol_a, list_sol_bfs = test_obs()
+    #plot_test_obs_no_solution(list_no_sol)
+    #plot_test_obs_solution(list_sol_a, list_sol_bfs)
     # #1. Créer un graphe NetworkX
     # G = nx.DiGraph()
 
