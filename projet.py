@@ -35,7 +35,6 @@ def read_file(file_name : str):
         direction = direction.rstrip("\n")
         direction = direction.upper()
 
-
         if direction == "NORD" :
             direction = NORD
 
@@ -49,6 +48,7 @@ def read_file(file_name : str):
             direction = OUEST
 
         return mat, int(xd), int(yd), int(xa), int(ya), direction
+
 
 def forbidden_edges(mat):
     """
@@ -267,9 +267,9 @@ def astar(graph, start, end):
     return None
 
 
-def write_file(filename, result):
+def result_out(filename, result):
     """
-    Docstring for write_file
+    Résultat dans un fichier
     
     :param filename: Description
     :param result: Description
@@ -453,35 +453,37 @@ def plot_test_obs_no_solution(list_no_sol):
     plt.title("Temps d'exécution en fonction du nombre d'obstacles dans une grille 20x20, aucun chemin possible")
     plt.show()
 
-# def instances_out(mat):
-#     for i in range(len(result)-1):
-#         # print("result[i]", result[i])
-#         x_curr, y_curr, d_curr = result[i]
-#         x_next, y_next, d_next = result[i+1]
-        
-#         if x_curr != x_next:
-#             res += " a" + str(abs(x_curr - x_next))
-#         elif y_curr != y_next:
-#             res += " a" + str(abs(y_curr - y_next))
-#         else:
-#             delta = (d_curr - d_next) % 4
-#             if delta == 1:
-#                 res += " G"
-#             else:
-#                 res += " D"
+def translate_direction(direction):
+    if direction == 0:
+        return "nord"
+    elif direction == 1:
+        return "est"
+    elif direction == 2:
+        return "sud"
+    elif direction == 3:
+        return "ouest"
 
-#     with open(filename, "w") as f:
-#         f.write(res)
-
-#     #m et n
-#     #la matrice
-#     #dx dy, ax ay, direction(nord sud est ouest)
-#     #0 0
-#     return
-
-# def solutions_out():
-#     return
-
+def instance_out(filename, mat, start, end):
+    #TODO: pour plus d'une
+    m = str(len(mat))
+    n = str(len(mat[0]))
+    xd, yd, direction = start
+    xa, ya = end
+    direction = translate_direction(direction)
+    with open(filename, "w") as f:
+        line = m + " " + n +"\n"
+        f.write(line)
+        for i in mat:
+            line = ""
+            for n in i:
+                line += str(n) + " "
+            line += "\n"
+            f.write(line)
+        line = str(xd) + " " + str(yd) + " " + str(xa) + " " + str(ya) + " " + str(direction) +"\n"
+        f.write(line)
+        line = "0 0"
+        f.write(line)
+    return
 
 
 if __name__ == "__main__" :
@@ -497,6 +499,8 @@ if __name__ == "__main__" :
     # #     print("voisins : ", graphe[u])
     # #     print("")
 
+    instance_out("test_sortie", mat, (xd,yd,direction), (xa,ya))
+
     dictionnaire = create_graph(mat)
     bfs_sol = bfs(dictionnaire, (xd,yd,direction), (xa,ya))
     print("BFS : ", bfs_sol)
@@ -504,8 +508,8 @@ if __name__ == "__main__" :
     # a = astar(graphe, (xd,yd, direction), (xa,ya))
     # print("A*: ", len(a),a)
 
-    # write_file("test_bfs.txt", bfs_sol) 
-    # write_file("test_astar.txt", a)
+    # result_out("test_bfs.txt", bfs_sol) 
+    # result_out("test_astar.txt", a)
 
     #la, lbfs = test_grid()
     #plot_test_grid(la, lbfs)
