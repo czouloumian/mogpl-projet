@@ -39,23 +39,23 @@ def show_grid_window(m, n, p):
     canvas.get_tk_widget().pack()
 
     # Saisie départ/direction/arrivée
-    tk.Label(frame_inputs, text="Point de départ i (ligne)").pack()
+    tk.Label(frame_inputs, text="Ligne de départ").pack()
     entry_i = tk.Entry(frame_inputs)
     entry_i.pack()
 
-    tk.Label(frame_inputs, text="Point de départ j (colonne)").pack()
+    tk.Label(frame_inputs, text="Colonne de départ").pack()
     entry_j = tk.Entry(frame_inputs)
     entry_j.pack()
 
-    tk.Label(frame_inputs, text="Direction initiale d (0=N,1=E,2=S,3=O)").pack()
+    tk.Label(frame_inputs, text="Direction initiale d (NORD = 0, EST = 1, SUD = 2, OUEST = 3)").pack()
     entry_d = tk.Entry(frame_inputs)
     entry_d.pack()
 
-    tk.Label(frame_inputs, text="Point d'arrivée i").pack()
+    tk.Label(frame_inputs, text="Ligne d'arrivée").pack()
     entry_dest_i = tk.Entry(frame_inputs)
     entry_dest_i.pack()
 
-    tk.Label(frame_inputs, text="Point d'arrivée j").pack()
+    tk.Label(frame_inputs, text="Colonne d'arrivée").pack()
     entry_dest_j = tk.Entry(frame_inputs)
     entry_dest_j.pack()
 
