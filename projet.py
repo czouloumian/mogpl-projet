@@ -487,23 +487,23 @@ def instance_out(filename, mat, start, end):
 
 
 if __name__ == "__main__" :
-    mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
+    #mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
 
-    forbidden_list = forbidden_edges(mat)
+    #forbidden_list = forbidden_edges(mat)
     #print("forbidden list : ", forbidden_list)
     # # print(len(forbidden_list))
 
-    graphe = create_graph(mat)
+    #graphe = create_graph(mat)
     # # for u in graphe.keys():
     # #     print("sommet : ", u)
     # #     print("voisins : ", graphe[u])
     # #     print("")
 
-    instance_out("test_sortie", mat, (xd,yd,direction), (xa,ya))
+    #instance_out("test_sortie", mat, (xd,yd,direction), (xa,ya))
 
-    dictionnaire = create_graph(mat)
-    bfs_sol = bfs(dictionnaire, (xd,yd,direction), (xa,ya))
-    print("BFS : ", bfs_sol)
+    #dictionnaire = create_graph(mat)
+    #bfs_sol = bfs(dictionnaire, (xd,yd,direction), (xa,ya))
+    #print("BFS : ", bfs_sol)
 
     # a = astar(graphe, (xd,yd, direction), (xa,ya))
     # print("A*: ", len(a),a)
@@ -529,21 +529,21 @@ if __name__ == "__main__" :
     # nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
     # plt.show()
     
-    # #mat = [[0,0], [0,0]]
-    # #graphe = create_graph(mat)
+    mat = [[0,1], [0,0]]
+    graphe = create_graph(mat)
 
     # 1. Créer un graphe NetworkX
-    #G = nx.DiGraph()
+    G = nx.DiGraph()
 
     # 2. Ajouter les arêtes depuis le dictionnaire
-    #for u, neighbors in graphe.items():
-     #   for v in neighbors:
-      #      G.add_edge(u, v)
+    for u, neighbors in graphe.items():
+        for v in neighbors:
+            G.add_edge(u, v)
 
     # 3. Dessiner
-    #pos = nx.spring_layout(G)  # calcule une position des noeuds
-    #nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
-    #plt.show()
+    pos = nx.spring_layout(G)  # calcule une position des noeuds
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
+    plt.show()
 
     #mat = [[0, 0, 0], [1, 0, 0], [0, 1, 0]]
     #graphe = create_graph(mat)

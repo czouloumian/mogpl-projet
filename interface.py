@@ -116,7 +116,10 @@ def show_grid_window(m, n, p):
                             ax.plot([x, x], [ii + 0.5, ii + 0.5 + step], color='red', linewidth=2, marker='o')
 
 
-            ax.set_title("Chemin trouvé")
+                ax.set_title("Chemin trouvé")
+            else :
+                ax.set_title("Aucun chemin trouvé")
+
             canvas.draw()
 
         except ValueError as e:
