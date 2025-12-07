@@ -33,10 +33,11 @@ def test_grid():
     return list_astar, list_bfs
 
 
-def run_tests_grid_and_save(instances):
+def run_tests_and_save_grid(instances):
     """
     Fait les tests de temps d'éxecution de BFS et A* pour les instaces dans la liste
-    :param instances: Liste des instaces à tester
+    :param instances: Liste des instances à tester
+    :param file_suffix: (str) "obstacles", "grid", ou autre description selon les tests effectués
     :return: Renvoie 4 listes avec les chemins et les temps d'éxecution retournés
     """
     paths_bfs = []
@@ -64,10 +65,27 @@ def run_tests_grid_and_save(instances):
 
         paths_bfs.append(path)
 
-    result_out_many("results_bfs", paths_bfs)
+    result_out_many("result_bfs", paths_bfs)
     result_out_many("results_astar", paths_astar)
 
+    means_astar = group_by_ten(results_astar)
+    means_bfs = group_by_ten(results_bfs)
+    plot_test_grid(means_astar, means_bfs)
+
     return paths_bfs, results_bfs, paths_astar, results_astar
+
+
+def group_by_ten(results):
+    """
+    Regroupes les resultats en moyenne par 10 pour le plot
+    """
+    liste_plot = []
+    for i in range(0, len(results),10):
+        chunk = results[i:i+10]
+        if len(chunk) == 10:
+            liste_plot.append(sum(chunk)/10)
+    return liste_plot
+
 
 def plot_test_grid(list_astar, list_bfs):
     """
@@ -83,6 +101,46 @@ def plot_test_grid(list_astar, list_bfs):
     plt.legend()
     plt.show()
 
+def run_tests_and_save_obs(instances):
+    """
+    Fait les tests de temps d'éxecution de BFS et A* pour les instaces dans la liste
+    :param instances: Liste des instances à tester
+    :param file_suffix: (str) "obstacles", "grid", ou autre description selon les tests effectués
+    :return: Renvoie 4 listes avec les chemins et les temps d'éxecution retournés
+    """
+    paths_bfs = []
+    results_bfs = []
+    paths_astar = []
+    results_astar = []
+
+    for x in instances:
+        mat, (xd, yd, direction), (xa, ya) = x
+        graphe = create_graph(mat)
+
+        # test astar
+        start = time.time()
+        path = astar(graphe, (xd, yd, direction), (xa, ya))
+        end = time.time()
+        results_astar.append(end - start)
+
+        paths_astar.append(path)
+
+        # test bfs
+        start = time.time()
+        path = bfs(graphe, (xd, yd, direction), (xa, ya))
+        end = time.time()
+        results_bfs.append(end - start)
+
+        paths_bfs.append(path)
+
+    result_out_many("result_bfs", paths_bfs)
+    result_out_many("results_astar", paths_astar)
+
+    means_astar = group_by_ten(results_astar)
+    means_bfs = group_by_ten(results_bfs)
+    plot_test_obs_solution(means_astar, means_bfs)
+
+    return paths_bfs, results_bfs, paths_astar, results_astar
 
 def test_obs():
     """

@@ -33,3 +33,15 @@ def generate_and_save_instances_grid(filename):
             instance_out(filename, mat, (0, 0, 0), (i * 10, i * 10))
             instances.append((mat, (0, 0, 0), (i * 10, i * 10)))
     return instances
+
+def generate_and_save_instances_obstacle(filename):
+    """
+    Generate 10 instances per number of obstacles
+    """
+    instances = []
+    for i in range(1, 6):
+        for _ in range(10):
+            mat, _ = generate_instance(20, 20, i * 10)
+            instance_out(filename, mat, (0, 0, 0), (20, 20))
+            instances.append((mat, (0, 0, 0), (20, 20)))
+    return instances

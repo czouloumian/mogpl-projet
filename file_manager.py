@@ -150,5 +150,3 @@ def result_out_many(filename, paths):
                     else:
                         res += " D"
         f.write(res + "\n")
-
-
