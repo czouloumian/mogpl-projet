@@ -276,6 +276,34 @@ def result_out(filename, result):
     with open(filename, "w") as f:
         f.write(res)
 
+def result_out_many(filename, paths):
+    """
+    Résultat dans un fichier, si plusieurs graphes à la fois
+    
+    :param filename: Description
+    :param result: Description
+    """
+    with open(filename, "w") as f:
+        for result in paths:
+            if result == None:
+                res = "None"
+            else:
+                res = str(len(result)-1) #taille du resultat, -1 car on ne compte pas la position de depart
+                for i in range(len(result)-1):
+                    x_curr, y_curr, d_curr = result[i]
+                    x_next, y_next, d_next = result[i+1]
+                    
+                    if x_curr != x_next:
+                        res += " a" + str(abs(x_curr - x_next))
+                    elif y_curr != y_next:
+                        res += " a" + str(abs(y_curr - y_next))
+                    else:
+                        delta = (d_curr - d_next) % 4
+                        if delta == 1:
+                            res += " G"
+                        else:
+                            res += " D"
+            f.write(res + "\n")
 
 def generate_instance_grid(m, n, o):
     """
@@ -296,21 +324,17 @@ def generate_instance_grid(m, n, o):
             obstacles += 1
     return mat, create_graph(mat)
 
-def generate_instance_obs(o):
+def generate_and_save_instances_grid(filename):
     """
-    Generate instances based on the number of obstacles
-    
-    :param o: number of obstacles
+    Generate 10 instances per size of the grid
     """
-    mat = np.zeros((20,20), dtype=int)
-    obstacles = 0
-    while obstacles < o:
-        x = random.randint(0,19)
-        y = random.randint(0,19)
-        if mat[x][y] == 0 and not(x== 0 and y==0):
-            mat[x][y] = 1
-            obstacles += 1
-    return mat, create_graph(mat)
+    instances = []
+    for i in range(1,6):
+        for _ in range(10):
+            mat, _ = generate_instance_grid(i*10,i*10,i*10)
+            instance_out(filename, mat, (0,0,0), (i*10,i*10))
+            instances.append((mat, (0,0,0), (i*10,i*10)))
+    return instances
 
 def test_grid():
     """
@@ -337,6 +361,59 @@ def test_grid():
         list_astar.append(t_a/1000)
         list_bfs.append(t_bfs/1000)
     return list_astar, list_bfs
+
+
+def run_tests_grid_and_save(instances, file_out):
+    paths_bfs = []
+    results_bfs = []
+    paths_astar = []
+    results_astar = []
+
+    for x in instances:
+        mat, (xd,yd,direction), (xa,ya) = x
+        graphe = create_graph(mat)
+
+        #test astar
+        start = time.time()
+        path = astar(graphe, (xd,yd,direction), (xa, ya))
+        end = time.time()
+        results_astar.append(end - start)
+        if path == None:
+            paths_astar.append([])
+        else:
+            paths_astar.append(path)
+
+        #test bfs
+        start = time.time()
+        path = bfs(graphe, (xd,yd,direction), (xa, ya))
+        end = time.time()
+        results_bfs.append(end - start)
+        if path == None:
+            paths_bfs.append([])
+        else:
+            paths_bfs.append(path)
+
+    result_out_many("results_bfs", paths_bfs)
+    result_out_many("results_astar", paths_astar)
+
+    return paths_bfs, results_bfs, paths_astar, results_astar
+
+def generate_instance_obs(o):
+    """
+    Generate instances based on the number of obstacles
+    
+    :param o: number of obstacles
+    """
+    mat = np.zeros((20,20), dtype=int)
+    obstacles = 0
+    while obstacles < o:
+        x = random.randint(0,19)
+        y = random.randint(0,19)
+        if mat[x][y] == 0 and not(x== 0 and y==0):
+            mat[x][y] = 1
+            obstacles += 1
+    return mat, create_graph(mat)
+
 
 def plot_test_grid(list_astar, list_bfs):
     """
@@ -436,13 +513,15 @@ def translate_direction(direction):
         return "ouest"
 
 def instance_out(filename, mat, start, end):
-    #TODO: pour plus d'une
+    """
+    Sauvegarde une instance de graphe dans un fichier
+    """
     m = str(len(mat))
     n = str(len(mat[0]))
     xd, yd, direction = start
     xa, ya = end
     direction = translate_direction(direction)
-    with open(filename, "w") as f:
+    with open(filename, "a") as f:
         line = m + " " + n +"\n"
         f.write(line)
         for i in mat:
@@ -455,12 +534,14 @@ def instance_out(filename, mat, start, end):
         f.write(line)
         line = "0 0"
         f.write(line)
+        f.write("\n")
     return
-
+    
 
 if __name__ == "__main__" :
     mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
-
+    instances = generate_and_save_instances_grid("test_instances.txt")
+    paths_bfs, results_bfs, paths_astar, results_astar = run_tests_grid_and_save(instances, "file_out")
     #forbidden_list = forbidden_edges(mat)
     #print("forbidden list : ", forbidden_list)
     # # print(len(forbidden_list))
