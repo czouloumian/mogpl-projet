@@ -29,7 +29,6 @@ def read_file(file_name : str):
             mat[i] = file.readline().split(" ")
 
         #xd = x de départ et xa = x d'arrivée
-
         xd, yd, xa, ya, direction = file.readline().split(" ")
 
         direction = direction.rstrip("\n")
@@ -131,7 +130,6 @@ def create_graph(mat):
     dictionary = dict()
 
     forbidden_list = forbidden_edges(mat)
-    # print("forbidden list : ", forbidden_list)
 
     for i in range (m+1):
         for j in range (n+1):
@@ -203,13 +201,11 @@ def reconstruct_path(came_from, end):
     :param came_from: Description
     :param end: Description
     """
-    #print("debut reconstruct")
     path = [end]
     parent = came_from[end]
     while parent :
         path.append(parent)
         parent = came_from[parent]
-    #print("reconstructed: ", path)
     return path[::-1]
 
 
@@ -232,37 +228,23 @@ def astar(graph, start, end):
     f = {start : g[start] + h}
     came_from = {start: None}
 
-    #open_list = [(g, h, g+h, [start])]
     open_list = []
     heapq.heappush(open_list, (h,start))
 
-    #closedDict = dict([(k, False) for k in graph.keys()])
-
     while open_list:
-        # print("open_list: ", open_list)
         _, curr = heapq.heappop(open_list)
-        # print("curr: ", curr)
-        # print("g[curr]",g[curr])
-        # print("f[curr]",f[curr])
         i, j, _ = curr
         
         if (i,j) == end:
-            #print("came_from: ", came_from)
             path = reconstruct_path(came_from, curr)
-            #print("path dans a star ", path)
             return path
 
         for neighbor in graph[curr]:
-            # print("neighbor: ", neighbor)
             new_g = g[curr] + 1 #car toutes les arêtes du graphe ont un poids de 1
-            # print("new_g: ", new_g)
             if neighbor not in g or new_g < g[neighbor]:
                 came_from[neighbor] = curr
-                # print("came_from[neighbor]: ", came_from[neighbor])
                 g[neighbor] = new_g
-                # print("g[neighbor]: ", g[neighbor])
                 f[neighbor] = new_g + calculate_heuristic(neighbor, end)
-                # print("f[neighbor]: ", f[neighbor])
                 heapq.heappush(open_list, (f[neighbor], neighbor))
     return None
 
@@ -277,7 +259,6 @@ def result_out(filename, result):
 
     res = str(len(result)-1) #taille du resultat, -1 car on ne compte pas la position de depart
     for i in range(len(result)-1):
-        # print("result[i]", result[i])
         x_curr, y_curr, d_curr = result[i]
         x_next, y_next, d_next = result[i+1]
         
@@ -365,9 +346,6 @@ def plot_test_grid(list_astar, list_bfs):
     """
     plt.plot([10, 20, 30, 40, 50], list_astar, color="blue", label="A*")
     plt.plot([10, 20, 30, 40, 50], list_bfs, color="red", label="BFS")
-    # plt.plot(liste_n, 0.00001*liste_n, color="red", label="O(n)")
-    # plt.plot(liste_n, 0.000001*(liste_n**2), color="orange", label="O(n²)")
-    # plt.plot(liste_n, 0.00000001*(2**liste_n), color="green", label="O(2ⁿ)")
     plt.xlabel("Taille de la grille")
     plt.ylabel("Temps d'execution")
     plt.title("Temps d'exécution en fonction de la taille de la grille")
@@ -428,9 +406,6 @@ def plot_test_obs_solution(list_sol_a, list_sol_bfs):
     """
     plt.plot([10,20,30,40,50], list_sol_a, color="blue", label = "A*")
     plt.plot([10, 20, 30, 40, 50], list_sol_bfs, color="red", label = "BFS")
-    # plt.plot(liste_n, 0.00001*liste_n, color="red", label="O(n)")
-    # plt.plot(liste_n, 0.000001*(liste_n**2), color="orange", label="O(n²)")
-    # plt.plot(liste_n, 0.00000001*(2**liste_n), color="green", label="O(2ⁿ)")
     plt.xlabel("Nombre d'obstacles")
     plt.ylabel("Temps d'execution")
     plt.title("Temps d'exécution en fonction du nombre d'obstacles dans une grille 20x20")
@@ -445,9 +420,6 @@ def plot_test_obs_no_solution(list_no_sol):
     :param list_no_sol: list of the times taken for each randomly generated graph
     """
     plt.plot([10, 20, 30, 40, 50], list_no_sol, color="blue")
-    # plt.plot(liste_n, 0.00001*liste_n, color="red", label="O(n)")
-    # plt.plot(liste_n, 0.000001*(liste_n**2), color="orange", label="O(n²)")
-    # plt.plot(liste_n, 0.00000001*(2**liste_n), color="green", label="O(2ⁿ)")
     plt.xlabel("Nombre d'obstacles")
     plt.ylabel("Temps d'execution")
     plt.title("Temps d'exécution en fonction du nombre d'obstacles dans une grille 20x20, aucun chemin possible")
