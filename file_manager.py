@@ -1,9 +1,22 @@
 import numpy as np
+import os
 
 NORD = 0
 EST = 1
 SUD = 2
 OUEST = 3
+
+def demander_fichier():
+    """
+    Demande à l'utilisateur de saisir le nom ou le chemin d'un fichier
+    """
+    while True:
+        file_name = input("Entrez le nom ou le chemin du fichier : ")
+        if os.path.isfile(file_name):
+            print("Fichier trouvé :", file_name)
+            return file_name
+        else:
+            print("Fichier inexistant. Veuillez réessayer.")
 
 def read_file(file_name: str):
     """

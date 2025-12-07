@@ -1,25 +1,24 @@
-from file_manager import read_file
-from file_manager import result_out
+from file_manager import read_file, result_out, demander_fichier
 from graph_model import create_graph
-from pathfinding_solver import astar
+from pathfinding_solver import astar, bfs
 
 def main():
-    #TODO: à changer
-    mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
-    #instances = generate_and_save_instances_grid("test_instances.txt")
-    #paths_bfs, results_bfs, paths_astar, results_astar = run_tests_grid_and_save(instances, "file_out")
-    #forbidden_list = forbidden_edges(mat)
-    #print("forbidden list : ", forbidden_list)
-    # # print(len(forbidden_list))
+    file_name = demander_fichier()
+    mat, xd, yd, xa, ya, direction = read_file(file_name)
     graphe = create_graph(mat)
-    #instance_out("test_sortie", mat, (xd,yd,direction), (xa,ya))
-    #dictionnaire = create_graph(mat)
-    #bfs_sol = bfs(dictionnaire, (xd,yd,direction), (xa,ya))
-    #print("BFS : ", bfs_sol)
+    bfs_sol = bfs(graphe, (xd,yd,direction), (xa,ya))
+    print("Solution donnée par l'algorithme du BFS : ", bfs_sol)
     a = astar(graphe, (xd,yd, direction), (xa,ya))
-    print("A*: ", len(a),a)
-    # result_out("test_bfs.txt", bfs_sol) 
-    result_out("test_astar.txt", a)
-  
+    print("Solution donnée par l'algorithme A* : ",a)
+
+    sauvegarder = input("Voulez-vous sauvegarder le fichier ? (o/n) : ").strip().lower()
+
+    if sauvegarder == "o" or sauvegarder == "oui":
+        fichier_sortie = input("Entrez le nom du fichier de sauvegarde : ").strip()
+
+        result_out(fichier_sortie, a)
+
+        print(f"Le fichier a été sauvegardé sous : {fichier_sortie}")
+
 if __name__ == "__main__" :
     main()
