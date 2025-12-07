@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
 import time
-import numpy as np
-import random
 
 from pathfinding_solver import  astar, bfs
 from grid_instaces import  generate_instance_grid, generate_instance_obs
