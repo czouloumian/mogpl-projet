@@ -11,22 +11,18 @@ def show_grid_window(m, n, p):
     global grid
     grid = PL_projet.solution_linear_program(m, n, p)
 
-    # Nouvelle fenêtre
     grid_window = tk.Toplevel(root)
-    grid_window.title("Grille et saisie du chemin")
+    grid_window.title("Projet MOGPL")
 
-    # Frames pour mettre la grille à gauche et les entrées à droite
     frame_grid = tk.Frame(grid_window)
     frame_grid.pack(side=tk.LEFT, padx=10, pady=10)
 
     frame_inputs = tk.Frame(grid_window)
     frame_inputs.pack(side=tk.RIGHT, padx=10, pady=10)
 
-    # Figure Matplotlib
     fig, ax = plt.subplots()
     ax.imshow(grid, cmap="gray_r")
 
-    # Ajouter les railles
     ax.set_xticks([x - 0.5 for x in range(1, grid.shape[1])])
     ax.set_yticks([y - 0.5 for y in range(1, grid.shape[0])])
     ax.grid(color='black', linewidth=1)
@@ -68,13 +64,28 @@ def show_grid_window(m, n, p):
             dest_j = int(entry_dest_j.get())
 
             if not (0 <= d <= 3):
-                raise ValueError("Direction doit être entre 0 et 3")
-            if not (0 <= i <= len(grid)) or not (0 <= j <= len(grid[0])):
-                raise ValueError("Point de départ hors de la grille")
-            if not (0 <= dest_i <= len(grid)) or not (0 <= dest_j <= len(grid[0])):
-                raise ValueError("Point d'arrivée hors de la grille")
+                messagebox.showerror("Erreur", "Direction doit être entre 0 et 3")
+                return
 
-            path = projet.astar(projet.create_graph(grid), (i, j, d), (dest_i, dest_j))
+            if not (0 <= i <= len(grid)) or not (0 <= j <= len(grid[0])):
+                messagebox.showerror("Erreur", "Point de départ hors de la grille")
+                return
+
+            if not (0 <= dest_i <= len(grid)) or not (0 <= dest_j <= len(grid[0])):
+                messagebox.showerror("Erreur", "Point d'arrivée hors de la grille")
+                return
+
+            graph = projet.create_graph(grid)
+
+            if (i,j,d) not in graph :
+                messagebox.showerror("Erreur", "Point de départ saisi est un obstacle")
+                return
+
+            if (dest_i, dest_j, 0) not in graph :
+                messagebox.showerror("Erreur", "Point d'arrivée saisi est un obstacle")
+                return
+
+            path = projet.astar(graph, (i, j, d), (dest_i, dest_j))
 
             # Tracer la grille
             ax.clear()
@@ -85,13 +96,12 @@ def show_grid_window(m, n, p):
             ax.set_xticklabels([])
             ax.set_yticklabels([])
 
-            # Tracer le chemin sur les railles (déplacement du milieu d'une case à l'autre)
+            # Tracer le chemin
             if path:
                 for idx in range(len(path) - 1):
                     i0, j0, _ = path[idx]
                     i1, j1, _ = path[idx + 1]
 
-                    # Conversion : soustraire 1 pour passer de 1-index à 0-index
                     i0 -= 1
                     j0 -= 1
                     i1 -= 1
@@ -101,16 +111,16 @@ def show_grid_window(m, n, p):
                     if i0 == i1 and j0 == j1:
                         continue
 
-                    # Horizontal ?
+                    # Horizontal
                     if i0 == i1:
-                        y = i0 + 0.5  # milieu du bord horizontal
+                        y = i0 + 0.5
                         step = 1 if j1 > j0 else -1
                         for jj in range(j0, j1, step):
                             ax.plot([jj + 0.5, jj + 0.5 + step], [y, y], color='red', linewidth=2, marker='o')
 
-                    # Vertical ?
+                    # Vertical
                     elif j0 == j1:
-                        x = j0 + 0.5  # milieu du bord vertical
+                        x = j0 + 0.5
                         step = 1 if i1 > i0 else -1
                         for ii in range(i0, i1, step):
                             ax.plot([x, x], [ii + 0.5, ii + 0.5 + step], color='red', linewidth=2, marker='o')
@@ -142,7 +152,6 @@ def generate_grid_main():
     except ValueError as e:
         messagebox.showerror("Erreur", str(e))
 
-# --- fenêtre principale ---
 root = tk.Tk()
 root.title("Projet MOGPL")
 
