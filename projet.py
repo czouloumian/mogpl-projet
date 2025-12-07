@@ -5,6 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import random
 import time
+import math
 
 NORD = 0
 EST = 1
@@ -173,26 +174,14 @@ def bfs(G, start, end):
 def calculate_heuristic(curr, end):
     """
     Calculate the heuristic
-    
+
     :param curr: current position
     :param end: end position
     """
-    #manhattan distance
     i1, j1, _ = curr
     i2, j2 = end
-    x = abs(i1-i2)
-    if (x %3) == 0:
-        x = x // 3
-    else:
-        x = x//3 +1
-    
-    y = abs(j1-j2)
-    if (y %3) == 0:
-        y = y // 3
-    else:
-        y = y//3 +1
 
-    return x + y
+    return math.ceil(abs(i1 - i2)/3) + math.ceil(abs(j1 - j2)/3)
 
 def reconstruct_path(came_from, end):
     """
@@ -246,7 +235,7 @@ def astar(graph, start, end):
                 g[neighbor] = new_g
                 f[neighbor] = new_g + calculate_heuristic(neighbor, end)
                 heapq.heappush(open_list, (f[neighbor], neighbor))
-    return None
+    return []
 
 
 def result_out(filename, result):
@@ -540,13 +529,13 @@ def instance_out(filename, mat, start, end):
 
 if __name__ == "__main__" :
     mat, xd, yd, xa, ya, direction = read_file("exemple_entree.txt")
-    instances = generate_and_save_instances_grid("test_instances.txt")
-    paths_bfs, results_bfs, paths_astar, results_astar = run_tests_grid_and_save(instances, "file_out")
+    #instances = generate_and_save_instances_grid("test_instances.txt")
+    #paths_bfs, results_bfs, paths_astar, results_astar = run_tests_grid_and_save(instances, "file_out")
     #forbidden_list = forbidden_edges(mat)
     #print("forbidden list : ", forbidden_list)
     # # print(len(forbidden_list))
 
-    #graphe = create_graph(mat)
+    graphe = create_graph(mat)
     # # for u in graphe.keys():
     # #     print("sommet : ", u)
     # #     print("voisins : ", graphe[u])
@@ -558,11 +547,11 @@ if __name__ == "__main__" :
     #bfs_sol = bfs(dictionnaire, (xd,yd,direction), (xa,ya))
     #print("BFS : ", bfs_sol)
 
-    # a = astar(graphe, (xd,yd, direction), (xa,ya))
-    # print("A*: ", len(a),a)
+    a = astar(graphe, (xd,yd, direction), (xa,ya))
+    print("A*: ", len(a),a)
 
     # result_out("test_bfs.txt", bfs_sol) 
-    # result_out("test_astar.txt", a)
+    result_out("test_astar.txt", a)
 
     #la, lbfs = test_grid()
     #plot_test_grid(la, lbfs)

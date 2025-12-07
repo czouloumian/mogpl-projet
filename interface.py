@@ -2,14 +2,15 @@ import tkinter as tk
 from tkinter import messagebox
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
-import projet
-import PL_projet
+from optimization_problem import solution_linear_program
+from graph_model import create_graph
+from pathfinding_solver import astar
 
 grid = None  # variable globale
 
 def show_grid_window(m, n, p):
     global grid
-    grid = PL_projet.solution_linear_program(m, n, p)
+    grid = solution_linear_program(m, n, p)
 
     grid_window = tk.Toplevel(root)
     grid_window.title("Projet MOGPL")
@@ -75,7 +76,7 @@ def show_grid_window(m, n, p):
                 messagebox.showerror("Erreur", "Point d'arrivée hors de la grille")
                 return
 
-            graph = projet.create_graph(grid)
+            graph = create_graph(grid)
 
             if (i,j,d) not in graph :
                 messagebox.showerror("Erreur", "Point de départ saisi est un obstacle")
@@ -85,7 +86,7 @@ def show_grid_window(m, n, p):
                 messagebox.showerror("Erreur", "Point d'arrivée saisi est un obstacle")
                 return
 
-            path = projet.astar(graph, (i, j, d), (dest_i, dest_j))
+            path = astar(graph, (i, j, d), (dest_i, dest_j))
 
             # Tracer la grille
             ax.clear()
