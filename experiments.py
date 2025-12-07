@@ -65,8 +65,8 @@ def run_tests_and_save_grid(instances):
 
         paths_bfs.append(path)
 
-    result_out_many("result_bfs", paths_bfs)
-    result_out_many("results_astar", paths_astar)
+    result_out_many("result_bfs_instances", paths_bfs)
+    result_out_many("results_astar_instances", paths_astar)
 
     means_astar = group_by_ten(results_astar)
     means_bfs = group_by_ten(results_bfs)
@@ -133,8 +133,8 @@ def run_tests_and_save_obs(instances):
 
         paths_bfs.append(path)
 
-    result_out_many("result_bfs", paths_bfs)
-    result_out_many("results_astar", paths_astar)
+    result_out_many("result_bfs_obs", paths_bfs)
+    result_out_many("results_astar_obs", paths_astar)
 
     means_astar = group_by_ten(results_astar)
     means_bfs = group_by_ten(results_bfs)

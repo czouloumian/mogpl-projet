@@ -22,7 +22,7 @@ def generate_instance(m, n, o):
             obstacles += 1
     return mat, create_graph(mat)
 
-def generate_and_save_instances_grid(filename):
+def generate_and_save_instances_grid():
     """
     Generate 10 instances per size of the grid
     """
@@ -30,11 +30,11 @@ def generate_and_save_instances_grid(filename):
     for i in range(1, 6):
         for _ in range(10):
             mat, _ = generate_instance(i * 10, i * 10, i * 10)
-            instance_out(filename, mat, (0, 0, 0), (i * 10, i * 10))
+            instance_out("instances_grid", mat, (0, 0, 0), (i * 10, i * 10))
             instances.append((mat, (0, 0, 0), (i * 10, i * 10)))
     return instances
 
-def generate_and_save_instances_obstacle(filename):
+def generate_and_save_instances_obstacle():
     """
     Generate 10 instances per number of obstacles
     """
@@ -42,6 +42,6 @@ def generate_and_save_instances_obstacle(filename):
     for i in range(1, 6):
         for _ in range(10):
             mat, _ = generate_instance(20, 20, i * 10)
-            instance_out(filename, mat, (0, 0, 0), (20, 20))
+            instance_out("instances_obstacles", mat, (0, 0, 0), (20, 20))
             instances.append((mat, (0, 0, 0), (20, 20)))
     return instances
