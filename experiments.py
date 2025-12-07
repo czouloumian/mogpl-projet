@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import time
 
 from pathfinding_solver import  astar, bfs
-from grid_instaces import  generate_instance_grid, generate_instance_obs
+from instance_generator import  generate_instance
 from graph_model import create_graph
 from file_manager import result_out_many
 
@@ -17,7 +17,7 @@ def test_grid():
         t_a = 0
         t_bfs = 0
         for j in range(1000):
-            _, graphe = generate_instance_grid(i * 10, i * 10, i * 10)
+            _, graphe = generate_instance(i * 10, i * 10, i * 10)
             start = time.time()
             _ = astar(graphe, (0, 0, 0), (i * 10, i * 10))
             end = time.time()
@@ -103,7 +103,7 @@ def test_obs():
             redo = 0
             max_redo = 100
             while not a and redo < max_redo:
-                mat, graphe = generate_instance_obs(i * 10)
+                mat, graphe = generate_instance(20,20,i * 10)
                 start = time.time()
                 a = astar(graphe, (0, 0, 0), (20, 20))
                 end = time.time()
