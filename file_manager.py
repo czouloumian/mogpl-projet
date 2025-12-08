@@ -149,4 +149,4 @@ def result_out_many(filename, paths):
                         res += " G"
                     else:
                         res += " D"
-        f.write(res + "\n")
+            f.write(res + "\n")

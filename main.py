@@ -16,13 +16,10 @@ def main():
 
     if sauvegarder == "o" or sauvegarder == "oui":
         fichier_sortie = input("Entrez le nom du fichier de sauvegarde : ").strip()
-
         result_out(fichier_sortie, a)
-
         print(f"Le fichier a été sauvegardé sous : {fichier_sortie}")
 
 
-    
 
 if __name__ == "__main__" :
     main()

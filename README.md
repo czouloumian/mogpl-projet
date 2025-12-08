@@ -19,7 +19,7 @@ Le programme peut être exécuté de deux manières :
     ```
 3. Lancez le fichier suivant :
     ```bash
-    python interface.py
+    python3 interface.py
     ```
 4. Saisissez :  
     - La taille de la grille (M lignes et N colonnes)  
@@ -39,7 +39,7 @@ Si vous disposez d'un fichier (au format décrit en section II) contenant la gri
     ```
 3. Lancez le fichier suivant :
     ```bash
-    python main.py
+    python3 main.py
     ```
 4. Le programme demandera le nom du fichier d’entrée (ou son chemin absolu/relatif).  
 
