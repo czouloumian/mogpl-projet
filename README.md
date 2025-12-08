@@ -15,7 +15,7 @@ Le programme peut être exécuté de deux manières :
 1. Assurez-vous que Python (version >= 3.8) est installé sur votre machine.
 2. Accédez au répertoire du projet via le terminal :
     ```bash
-    cd <CHEMIN_DU_PROJET>
+    cd <CHEMIN_DU_PROJET>/src
     ```
 3. Lancez le fichier suivant :
     ```bash
@@ -35,7 +35,7 @@ Si vous disposez d'un fichier (au format décrit en section II) contenant la gri
 1. Assurez-vous que Python (version >= 3.8) est installé sur votre machine.  
 2. Accédez au répertoire du projet via le terminal :
     ```bash
-    cd <CHEMIN_DU_PROJET>
+    cd <CHEMIN_DU_PROJET>/src
     ```
 3. Lancez le fichier suivant :
     ```bash
