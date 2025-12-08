@@ -142,6 +142,11 @@ def show_grid_window(m, n, p):
                         else:
                             res += " D"
 
+                title = "Chemin trouvé : " + res
+                size = max(8, 20 - len(title) // 10)  # calcule une taille selon la longueur
+
+                ax.set_title(title, fontsize=size, wrap=True)
+
                 ax.set_title("Chemin trouvé : " + res)
             else :
                 ax.set_title("Aucun chemin trouvé")
