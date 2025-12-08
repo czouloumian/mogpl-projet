@@ -5,6 +5,7 @@ from collections import deque
 def bfs(G, start, end):
     """
     Algorithme BFS
+
     :param G: graphe représenté sous forme de dictionnaire
     :param start: point de départ
     :param end: point d'arrivée
@@ -38,6 +39,7 @@ def calculate_heuristic(curr, end):
 
     :param curr: current position
     :param end: end position
+    :return: l'heuristique
     """
     i1, j1, _ = curr
     i2, j2 = end
@@ -51,6 +53,7 @@ def reconstruct_path(came_from, end):
 
     :param came_from: Un dictionnaire contenant, pour chaque sommet, son prédécesseur dans le chemin
     :param end: Le point d'arrivée
+    :return: le chemin reconstruit
     """
     path = [end]
     parent = came_from[end]
@@ -67,7 +70,7 @@ def astar(graph, start, end):
     :param graph: graphe représenté sous forme de dictionnaire
     :param start: point de départ
     :param end: point d'arrivée
-    :return:
+    :return: le meilleur chemin si un chemin existe, une liste vide sinon
     """
 
     g = {start: 0}

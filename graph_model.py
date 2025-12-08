@@ -6,6 +6,9 @@ OUEST = 3
 def forbidden_edges(mat):
     """
     Renvoie la liste des coordonnées des intersections interdites de la grille
+
+    :param mat: la matrice de la grille
+    :return: la liste des coordonnées interdites
     """
 
     forbidden_list = set()
@@ -23,6 +26,8 @@ def forbidden_edges(mat):
 
 def get_neighbors(mat, forbidden_list, i, j, d):
     """
+    Renvoie les voisins du noeud
+
     :param mat: matrice des obstacles
     :param i: position abscisses
     :param j: position ordonnées
@@ -75,7 +80,8 @@ def get_neighbors(mat, forbidden_list, i, j, d):
 
 def create_graph(mat):
     """
-    Renvoi un dictionnaire correspondant aux relations entre les noeuds
+    Renvoie un dictionnaire correspondant aux relations entre les noeuds
+
     :param mat: matrice des obstacles
     :return: dictionnaire
     """

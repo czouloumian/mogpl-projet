@@ -21,8 +21,9 @@ def demander_fichier():
 def read_file(file_name: str):
     """
     Lit le fichier texte avec les données de départ
+
     :param file_name: Nom du fichier texte
-    :return: La matrice de la grille, le point de départ, la direction de départ et le point d'arrivée
+    :return: La matrice de la grille, le point de départ, le point d'arrivée et la direction de départ
     """
     with open(file_name, "r") as file:
         m, n = file.readline().split(" ")
@@ -56,6 +57,12 @@ def read_file(file_name: str):
         return mat, int(xd), int(yd), int(xa), int(ya), direction
 
 def translate_direction(direction):
+    """
+    Traduit la direction
+
+    :param direction: la direction
+    :return: (str) direction en notation utilisable pour un fichier de sortie
+    """
     if direction == NORD:
         return "nord"
     elif direction == EST:
@@ -68,6 +75,7 @@ def translate_direction(direction):
 def instance_out(filename, mat, start, end):
     """
     Sauvegarde une instance de graphe dans un fichier
+    
     :param filename: Nom du fichier
     :param mat: Matrice de la grille
     :param start: Point de départ

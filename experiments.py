@@ -8,7 +8,10 @@ from file_manager import result_out_many
 
 def group_by_ten(results):
     """
-    Regroupes les resultats en moyenne par 10 pour le plot
+    Regroupes les resultats en moyenne par 10 (le nombre d'instances par taille ou par nombre d'obstacles)
+
+    :param results: la liste des résultats
+    :return: une liste de moyennes pour le plot
     """
     liste_plot = []
     for i in range(0, len(results),10):
@@ -20,6 +23,7 @@ def group_by_ten(results):
 def run_tests_and_save_grid(instances):
     """
     Fait les tests de temps d'éxecution de BFS et A* pour les instaces dans la liste
+
     :param instances: Liste des instances à tester
     :return: Renvoie 4 listes avec les chemins et les temps d'éxecution retournés
     """
@@ -60,6 +64,7 @@ def run_tests_and_save_grid(instances):
 def run_tests_and_save_obs(instances):
     """
     Fait les tests de temps d'éxecution de BFS et A* pour les instaces dans la liste
+
     :param instances: Liste des instances à tester
     :param file_suffix: (str) "obstacles", "grid", ou autre description selon les tests effectués
     :return: Renvoie 4 listes avec les chemins et les temps d'éxecution retournés
@@ -102,7 +107,8 @@ def plot_test_grid_astar_bfs(list_astar, list_bfs):
     """
     Plot pour le test de la génération d'instances selon la taille
 
-    :param list: list of the times taken for each randomly generated graph
+    :param list_astar: liste des temps pris avec A* pour chaque graphe généré
+    :param list_bfs: liste des temps pris avec BFS pour chaque graphe généré
     """
     plt.plot([10, 20, 30, 40, 50], list_astar, color="blue", label="A*")
     plt.plot([10, 20, 30, 40, 50], list_bfs, color="red", label="BFS")
@@ -115,6 +121,9 @@ def plot_test_grid_astar_bfs(list_astar, list_bfs):
 def plot_test_obs_astar_bfs(list_sol_a, list_sol_bfs):
     """
     Test du temps d'exécution des algos et BFS A* selon le nombre d'obstacles
+
+    :param list_astar: liste des temps pris avec A* pour chaque graphe généré
+    :param list_bfs: liste des temps pris avec BFS pour chaque graphe généré
     """
     plt.plot([10, 20, 30, 40, 50], list_sol_a, color="blue", label="A*")
     plt.plot([10, 20, 30, 40, 50], list_sol_bfs, color="red", label="BFS")
@@ -127,6 +136,8 @@ def test_grid():
     """
     Test du temps d'exécution de l'algo A* selon le nombre d'obstacles
     Génère deux listes : une lorsqu'une solution a été trouvée et une autre lorsqu'il n'y a pas de solution
+
+    :return: les deux listes (avec solution et sans solution)
     """
     list_sol = []  # grilles pour lesquelles une solution a été trouvée
     list_no_sol = []  # grilles pour lesquelles il n'y avait pas de solution
@@ -176,6 +187,8 @@ def test_obs():
     """
     Test du temps d'exécution de l'algo A* selon le nombre d'obstacles
     Génère deux listes : une lorsqu'une solution a été trouvée et une autre lorsqu'il n'y a pas de solution
+
+    :return: les deux listes (avec solution et sans solution)
     """
     list_sol = []  # grilles pour lesquelles une solution a été trouvée
     list_no_sol = []  # grilles pour lesquelles il n'y avait pas de solution

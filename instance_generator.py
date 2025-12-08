@@ -10,6 +10,7 @@ def generate_instance(m, n, o):
     :param m: nombre de lignes de la grille
     :param n: nombre de colonnes de la grille
     :param o: nombre d'obstacles de la grille
+    :return: la matrice générée et le graphe corresopndand
     """
 
     mat = np.zeros((m, n), dtype=int)
@@ -24,7 +25,9 @@ def generate_instance(m, n, o):
 
 def generate_and_save_instances_grid():
     """
-    Generate 10 instances per size of the grid
+    Génère 10 instances par taille de la grille
+
+    :return: (list) liste d'instances
     """
     instances = []
     for i in range(1, 6):
@@ -36,7 +39,9 @@ def generate_and_save_instances_grid():
 
 def generate_and_save_instances_obstacle():
     """
-    Generate 10 instances per number of obstacles
+    Génère 10 instances par nombre différent d'obstacles
+
+    :return: (list) liste d'instances
     """
     instances = []
     for i in range(1, 6):
