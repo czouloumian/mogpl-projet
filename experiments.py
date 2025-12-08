@@ -8,7 +8,7 @@ from file_manager import result_out_many
 
 def group_by_ten(results):
     """
-    Regroupes les resultats en moyenne par 10 (le nombre d'instances par taille ou par nombre d'obstacles)
+    Regroupe les resultats en moyenne par 10 (le nombre d'instances par taille ou par nombre d'obstacles)
 
     :param results: la liste des résultats
     :return: une liste de moyennes pour le plot
