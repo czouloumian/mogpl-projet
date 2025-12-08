@@ -126,8 +126,23 @@ def show_grid_window(m, n, p):
                         for ii in range(i0, i1, step):
                             ax.plot([x, x], [ii + 0.5, ii + 0.5 + step], color='red', linewidth=2, marker='o')
 
+                res = str(len(path) - 1)  # taille du resultat, -1 car on ne compte pas la position de depart
+                for i in range(len(path) - 1):
+                    x_curr, y_curr, d_curr = path[i]
+                    x_next, y_next, d_next = path[i + 1]
 
-                ax.set_title("Chemin trouvé")
+                    if x_curr != x_next:
+                        res += " a" + str(abs(x_curr - x_next))
+                    elif y_curr != y_next:
+                        res += " a" + str(abs(y_curr - y_next))
+                    else:
+                        delta = (d_curr - d_next) % 4
+                        if delta == 1:
+                            res += " G"
+                        else:
+                            res += " D"
+
+                ax.set_title("Chemin trouvé : " + res)
             else :
                 ax.set_title("Aucun chemin trouvé")
 
